@@ -14,7 +14,7 @@ public enum TipoCliente {
 		this.descricao = descricao;
 	}
 	
-	public int getCod() {
+	public Integer getCod() {
 		return cod;
 	}
 	
@@ -28,7 +28,7 @@ public enum TipoCliente {
 		}
 		
 		for (TipoCliente tipoCliente : TipoCliente.values()) {
-			if (tipoCliente.equals(cod)) {
+			if (tipoCliente.getCod().equals(cod)) {
 				return tipoCliente;
 			}
 		}
