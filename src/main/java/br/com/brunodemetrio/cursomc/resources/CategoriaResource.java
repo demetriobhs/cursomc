@@ -33,7 +33,7 @@ public class CategoriaResource {
 	
 	@GetMapping
 	public ResponseEntity<List<?>> findAll() {
-		List<CategoriaDTO> categorias = service.getAllCategorias().stream()
+		List<CategoriaDTO> categorias = service.getAll().stream()
 				.map(categoria -> new CategoriaDTO(categoria))
 				.collect(Collectors.toList());
 		
@@ -42,19 +42,19 @@ public class CategoriaResource {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> find(@PathVariable Integer id) {
-		Categoria categoria = service.getCategoriaBy(id);
+		Categoria categoria = service.getById(id);
 		
 		return ResponseEntity.ok(categoria);
 	}
 	
 	@GetMapping("/page")
-	public ResponseEntity<Page<?>> findByPage(
+	public ResponseEntity<Page<?>> findPage(
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "itemsPerPage", defaultValue = "24") Integer itemsPerPage,
 			@RequestParam(name = "orderBy", defaultValue = "nome") String orderBy,
 			@RequestParam(name = "direction", defaultValue = "ASC") String direction) {
 		
-		Page<CategoriaDTO> categoriasPage = service.getCategoriasByPage(page, itemsPerPage, orderBy, direction)
+		Page<CategoriaDTO> categoriasPage = service.getByPage(page, itemsPerPage, orderBy, direction)
 				.map(categoria -> new CategoriaDTO(categoria));
 		
 		return ResponseEntity.ok(categoriasPage);
@@ -81,7 +81,7 @@ public class CategoriaResource {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
-		service.deleteCategoriaBy(id);
+		service.deleteById(id);
 		
 		return ResponseEntity.noContent().build();
 	}

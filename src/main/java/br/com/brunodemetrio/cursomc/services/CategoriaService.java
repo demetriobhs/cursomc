@@ -21,18 +21,19 @@ public class CategoriaService {
 	@Autowired
 	private CategoriaRepository repository;
 	
-	public Categoria getCategoriaBy(Integer id) {
-		Optional<Categoria> categoria = repository.findById(id);
-	
-		return categoria.orElseThrow(
-				() -> new ObjectNotFoundException("Objeto não encontrado! ID: " + id + " Tipo: " + Categoria.class.getName()));
-	}
-	
-	public List<Categoria> getAllCategorias() {
+	public List<Categoria> getAll() {
 		return repository.findAll();
 	}
 	
-	public Page<Categoria> getCategoriasByPage(Integer page, Integer itemsPerPage, String orderBy, String direction) {
+	public Categoria getById(Integer id) {
+		ensureCategoriaExists(id);
+		
+		Optional<Categoria> categoria = repository.findById(id);
+	
+		return categoria.get();
+	}
+	
+	public Page<Categoria> getByPage(Integer page, Integer itemsPerPage, String orderBy, String direction) {
 		PageRequest pageRequest = PageRequest.of(page, itemsPerPage, Direction.fromString(direction), orderBy);
 		
 		return repository.findAll(pageRequest);
@@ -44,22 +45,37 @@ public class CategoriaService {
 		return categoria;
 	}
 	
+	// TODO [REFACTOR] Garantir que esse metodo seja chamado apenas quando for para fazer update
+	// de todo o dado novo. Caso seja para fazer update parcial, criar um novo metodo com as
+	// regras de atualizacao dos dados selecionados.
+	// TODO [REFACTOR] garantir que a categoria tenha um ID. Fazer isso em uma validacao.
 	public Categoria update(Categoria categoria) {
-		getCategoriaBy(categoria.getId());
+		ensureCategoriaExists(categoria.getId());
 		
 		categoria = repository.save(categoria);
 		
 		return categoria;
 	}
 	
-	public void deleteCategoriaBy(Integer id) {
-		getCategoriaBy(id);
+	public void deleteById(Integer id) {
+		ensureCategoriaExists(id);
 		
 		try {
 			repository.deleteById(id);
 		} catch (DataIntegrityViolationException e) {
 			throw new DataIntegrityException("Não é possível excluir categoria de ID [" + id + "]"
 					+ " pois ela possui produto(s) relacionado(s).");
+		}
+	}
+	// TODO [REFACTOR] Esse metodo se repete em todas as classes, com a variacao apenas
+	// no repository e na classe principal. Pensar em uma maneira de refatorar pra que
+	// exista somente um metodo desse. Um exemplo do que ocorreu, eh que o ID estada vindo
+	// nulo e eu tive que acrescentar essa verificacao id == null, dai tive que fazer isso 
+	// em todas as classes. Trampo! So vou colocar esse REFACTOR aqui nesse metodo, mas
+	// tenho que refatorar de todas as classes que usam um metodo igual
+	private void ensureCategoriaExists(Integer id) {
+		if (id == null || !repository.existsById(id)) {
+			throw new ObjectNotFoundException("Objeto não encontrado! ID: " + id + " Tipo: " + Categoria.class.getName());
 		}
 	}
 	
