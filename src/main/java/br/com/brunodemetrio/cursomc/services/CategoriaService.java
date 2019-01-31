@@ -27,5 +27,13 @@ public class CategoriaService {
 		
 		return categoria;
 	}
+	
+	public Categoria update(Categoria categoria) {
+		getBy(categoria.getId());
+		
+		categoria = repository.save(categoria);
+		
+		return categoria;
+	}
 
 }
