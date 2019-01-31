@@ -46,13 +46,15 @@ public class CategoriaService {
 	}
 	
 	// TODO [REFACTOR] Garantir que esse metodo seja chamado apenas quando for para fazer update
-	// de todo o dado novo. Caso seja para fazer update parcial, criar um novo metodo com as
-	// regras de atualizacao dos dados selecionados.
+	// parcial do dado. Caso seja para fazer update total, criar um novo metodo que atualize
+	// o dado por completo.
 	// TODO [REFACTOR] garantir que a categoria tenha um ID. Fazer isso em uma validacao.
 	public Categoria update(Categoria categoria) {
-		ensureCategoriaExists(categoria.getId());
+		Categoria persistedCategoria = getById(categoria.getId());
 		
-		categoria = repository.save(categoria);
+		persistedCategoria.setNome(categoria.getNome());
+		
+		categoria = repository.save(persistedCategoria);
 		
 		return categoria;
 	}
