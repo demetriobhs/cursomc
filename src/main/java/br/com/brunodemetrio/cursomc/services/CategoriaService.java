@@ -3,10 +3,12 @@ package br.com.brunodemetrio.cursomc.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import br.com.brunodemetrio.cursomc.domain.Categoria;
 import br.com.brunodemetrio.cursomc.repositories.CategoriaRepository;
+import br.com.brunodemetrio.cursomc.services.exceptions.DataIntegrityException;
 import br.com.brunodemetrio.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -15,7 +17,7 @@ public class CategoriaService {
 	@Autowired
 	private CategoriaRepository repository;
 	
-	public Categoria getBy(Integer id) {
+	public Categoria getCategoriaBy(Integer id) {
 		Optional<Categoria> categoria = repository.findById(id);
 	
 		return categoria.orElseThrow(
@@ -29,11 +31,22 @@ public class CategoriaService {
 	}
 	
 	public Categoria update(Categoria categoria) {
-		getBy(categoria.getId());
+		getCategoriaBy(categoria.getId());
 		
 		categoria = repository.save(categoria);
 		
 		return categoria;
+	}
+	
+	public void deleteCategoriaBy(Integer id) {
+		getCategoriaBy(id);
+		
+		try {
+			repository.deleteById(id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataIntegrityException("Não é possível excluir categoria de ID [" + id + "]"
+					+ " pois ela possui produto(s) relacionado(s).");
+		}
 	}
 
 }
