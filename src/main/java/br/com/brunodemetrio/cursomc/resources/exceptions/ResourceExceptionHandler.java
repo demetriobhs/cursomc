@@ -1,7 +1,11 @@
 package br.com.brunodemetrio.cursomc.resources.exceptions;
 
-import org.springframework.http.HttpStatus;
+import static java.lang.System.currentTimeMillis;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -12,17 +16,27 @@ import br.com.brunodemetrio.cursomc.services.exceptions.ObjectNotFoundException;
 public class ResourceExceptionHandler {
 	
 	@ExceptionHandler(ObjectNotFoundException.class)
-	public ResponseEntity<StandardError> objectNotFound(ObjectNotFoundException e) {
-		StandardError error = new StandardError(HttpStatus.NOT_FOUND.value(), e.getMessage(), System.currentTimeMillis());
+	public ResponseEntity<StandardError> objectNotFoundError(ObjectNotFoundException e) {
+		StandardError error = new StandardError(NOT_FOUND.value(), e.getMessage(), currentTimeMillis());
 		
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+		return ResponseEntity.status(NOT_FOUND).body(error);
 	}
 	
 	@ExceptionHandler(DataIntegrityException.class)
-	public ResponseEntity<StandardError> dataIntegrity(DataIntegrityException e) {
-		StandardError error = new StandardError(HttpStatus.BAD_REQUEST.value(), e.getMessage(), System.currentTimeMillis());
+	public ResponseEntity<StandardError> dataIntegrityError(DataIntegrityException e) {
+		StandardError error = new StandardError(BAD_REQUEST.value(), e.getMessage(), currentTimeMillis());
 		
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+		return ResponseEntity.status(BAD_REQUEST).body(error);
+	}
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<StandardError> fieldValidationError(MethodArgumentNotValidException e) {
+		ValidationError error = new ValidationError(BAD_REQUEST.value(), "Erro de validação", currentTimeMillis());
+		
+		e.getBindingResult().getFieldErrors()
+			.forEach(fieldError -> error.addError(fieldError.getField(), fieldError.getDefaultMessage()));
+		
+		return ResponseEntity.status(BAD_REQUEST).body(error);
 	}
 
 }
