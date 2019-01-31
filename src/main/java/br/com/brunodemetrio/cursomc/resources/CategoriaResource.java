@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -27,6 +29,15 @@ public class CategoriaResource {
 	@Autowired
 	private CategoriaService service;
 	
+	@GetMapping
+	public ResponseEntity<List<?>> findAll() {
+		List<CategoriaDTO> categorias = service.getAllCategorias().stream()
+				.map(categoria -> new CategoriaDTO(categoria))
+				.collect(Collectors.toList());
+		
+		return ResponseEntity.ok(categorias);
+	}
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> find(@PathVariable Integer id) {
 		Categoria categoria = service.getCategoriaBy(id);
@@ -34,13 +45,17 @@ public class CategoriaResource {
 		return ResponseEntity.ok(categoria);
 	}
 	
-	@GetMapping
-	public ResponseEntity<List<?>> findAll() {
-		List<CategoriaDTO> categorias = service.getAllCategorias().stream()
-			.map(categoria -> new CategoriaDTO(categoria))
-			.collect(Collectors.toList());
+	@GetMapping("/page")
+	public ResponseEntity<Page<?>> findByPage(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "itemsPerPage", defaultValue = "24") Integer itemsPerPage,
+			@RequestParam(name = "orderBy", defaultValue = "nome") String orderBy,
+			@RequestParam(name = "direction", defaultValue = "ASC") String direction) {
 		
-		return ResponseEntity.ok(categorias);
+		Page<CategoriaDTO> categoriasPage = service.getCategoriasByPage(page, itemsPerPage, orderBy, direction)
+				.map(categoria -> new CategoriaDTO(categoria));
+		
+		return ResponseEntity.ok(categoriasPage);
 	}
 	
 	@PostMapping
