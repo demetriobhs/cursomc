@@ -2,6 +2,10 @@ package br.com.brunodemetrio.cursomc.resources.dtos;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotEmpty;
+
+import org.hibernate.validator.constraints.Length;
+
 import br.com.brunodemetrio.cursomc.domain.Categoria;
 
 public class CategoriaDTO implements Serializable {
@@ -10,6 +14,8 @@ public class CategoriaDTO implements Serializable {
 	
 	private Integer id;
 	
+	@NotEmpty(message = "Campo obrigatório")
+	@Length(min = 5, max = 80, message = "[nome] deve conter entre 5 e 80 caracteres")
 	private String nome;
 	
 	public CategoriaDTO() {
@@ -34,6 +40,10 @@ public class CategoriaDTO implements Serializable {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+	
+	public Categoria parse() {
+		return new Categoria(id, nome);
 	}
 	
 }
