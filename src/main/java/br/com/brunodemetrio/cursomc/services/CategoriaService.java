@@ -1,5 +1,6 @@
 package br.com.brunodemetrio.cursomc.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,10 @@ public class CategoriaService {
 	
 		return categoria.orElseThrow(
 				() -> new ObjectNotFoundException("Objeto não encontrado! ID: " + id + " Tipo: " + Categoria.class.getName()));
+	}
+	
+	public List<Categoria> getAllCategorias() {
+		return repository.findAll();
 	}
 	
 	public Categoria create(Categoria categoria) {
@@ -48,5 +53,5 @@ public class CategoriaService {
 					+ " pois ela possui produto(s) relacionado(s).");
 		}
 	}
-
+	
 }

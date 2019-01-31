@@ -1,6 +1,8 @@
 package br.com.brunodemetrio.cursomc.resources;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.brunodemetrio.cursomc.domain.Categoria;
+import br.com.brunodemetrio.cursomc.resources.dtos.CategoriaDTO;
 import br.com.brunodemetrio.cursomc.services.CategoriaService;
 
 @RestController
@@ -29,6 +32,15 @@ public class CategoriaResource {
 		Categoria categoria = service.getCategoriaBy(id);
 		
 		return ResponseEntity.ok(categoria);
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<?>> findAll() {
+		List<CategoriaDTO> categorias = service.getAllCategorias().stream()
+			.map(categoria -> new CategoriaDTO(categoria))
+			.collect(Collectors.toList());
+		
+		return ResponseEntity.ok(categorias);
 	}
 	
 	@PostMapping
