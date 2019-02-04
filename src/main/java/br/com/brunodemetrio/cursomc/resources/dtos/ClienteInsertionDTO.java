@@ -7,6 +7,9 @@ import javax.validation.constraints.NotEmpty;
 
 import org.hibernate.validator.constraints.Length;
 
+import br.com.brunodemetrio.cursomc.services.validation.annotation.ClienteInsertion;
+
+@ClienteInsertion
 public class ClienteInsertionDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;

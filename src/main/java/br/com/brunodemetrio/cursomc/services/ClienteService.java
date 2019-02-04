@@ -3,6 +3,8 @@ package br.com.brunodemetrio.cursomc.services;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -45,6 +47,7 @@ public class ClienteService {
 		return repository.findAll(pageRequest);
 	}
 	
+	@Transactional
 	public Cliente create(Cliente cliente) {
 		cliente = repository.save(cliente);
 		

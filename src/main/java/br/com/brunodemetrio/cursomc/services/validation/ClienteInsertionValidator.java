@@ -12,11 +12,17 @@ import java.util.Optional;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.com.brunodemetrio.cursomc.repositories.ClienteRepository;
 import br.com.brunodemetrio.cursomc.resources.dtos.ClienteInsertionDTO;
 import br.com.brunodemetrio.cursomc.resources.exceptions.FieldValidationError;
 import br.com.brunodemetrio.cursomc.services.validation.annotation.ClienteInsertion;
 
 public class ClienteInsertionValidator implements ConstraintValidator<ClienteInsertion, ClienteInsertionDTO> {
+	
+	@Autowired
+	private ClienteRepository repository;
 	
 	@Override
 	public void initialize(ClienteInsertion constraintAnnotation) {
@@ -26,7 +32,8 @@ public class ClienteInsertionValidator implements ConstraintValidator<ClienteIns
 	public boolean isValid(ClienteInsertionDTO clienteDTO, ConstraintValidatorContext context) {
 		List<FieldValidationError> errors = new ArrayList<>();
 		
-		isValidCPFOrCNPJ(clienteDTO).ifPresent(error -> errors.add(error));
+		checkCPFOrCNPJforError(clienteDTO).ifPresent(error -> errors.add(error));
+		checkEmailForError(clienteDTO).ifPresent(error -> errors.add(error));
 		
 		for (FieldValidationError error : errors) {
 			context.disableDefaultConstraintViolation();
@@ -38,9 +45,7 @@ public class ClienteInsertionValidator implements ConstraintValidator<ClienteIns
 		return errors.isEmpty();
 	}
 	
-	// TODO [REFACTOR] melhorar o nome do metodo para refletir o que ele retorna,
-	// pois o metodo comecando com "is" dah a entender que o retorno eh booleano
-	private Optional<FieldValidationError> isValidCPFOrCNPJ(ClienteInsertionDTO clienteDTO) {
+	private Optional<FieldValidationError> checkCPFOrCNPJforError(ClienteInsertionDTO clienteDTO) {
 		Integer tipoCliente = clienteDTO.getTipoCliente();
 		String cpfOuCnpj = clienteDTO.getCpfOuCnpj();
 		
@@ -48,6 +53,14 @@ public class ClienteInsertionValidator implements ConstraintValidator<ClienteIns
 			return Optional.of(new FieldValidationError("cpfOuCnpj", "CPF inválido"));
 		} else if (PESSOA_JURIDICA.getCod().equals(tipoCliente) && !isValidCNPJ(cpfOuCnpj)) {
 			return Optional.of(new FieldValidationError("cpfOuCnpj", "CNPJ inválido"));
+		}
+		
+		return Optional.empty();
+	}
+	
+	private Optional<FieldValidationError> checkEmailForError(ClienteInsertionDTO clienteDTO) {
+		if (repository.findByEmail(clienteDTO.getEmail()) != null) {
+			return Optional.of(new FieldValidationError("email", "Email já cadastrado"));
 		}
 		
 		return Optional.empty();
