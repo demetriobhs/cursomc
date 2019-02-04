@@ -2,34 +2,48 @@ package br.com.brunodemetrio.cursomc.resources.dtos;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+
+import org.hibernate.validator.constraints.Length;
+
 public class ClienteInsertionDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	@NotEmpty(message = "Campo obrigatório")
+	@Length(min = 5, max = 120, message = "Tamanho válido entre 5 e 120 caracteres")
 	private String nome;
 	
+	@NotEmpty(message = "Campo obrigatório")
+	@Email(message = "Email inválido")
 	private String email;
 	
+	@NotEmpty(message = "Campo obrigatório")
 	private String cpfOuCnpj;
 	
 	private Integer tipoCliente;
 	
 	// TODO [REFACTOR] pesquisar a melhor pratica de criacao de DTO
 	// para segregar atributos de outro contexto como este de endereco
+	@NotEmpty(message = "Campo obrigatório")
 	private String logradouro;
 	
+	@NotEmpty(message = "Campo obrigatório")
 	private String numero;
 	
 	private String complemento;
 	
 	private String bairro;
 	
+	@NotEmpty(message = "Campo obrigatório")
 	private String cep;
 	
 	private Integer cidadeId;
 	
 	// TODO [REFACTOR] pesquisar a melhor pratica de criacao de DTO
 	// para segregar atributos de outro contexto como este de telefones
+	@NotEmpty(message = "Campo obrigatório")
 	private String telefone1;
 	
 	private String telefone2;
