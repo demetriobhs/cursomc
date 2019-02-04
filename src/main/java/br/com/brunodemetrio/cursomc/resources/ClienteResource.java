@@ -83,6 +83,7 @@ public class ClienteResource {
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> update(@Valid @RequestBody ClienteDTO clienteDTO, @PathVariable Integer id) {
+		clienteDTO.setId(id);
 		Cliente cliente = dtoService.parse(clienteDTO);
 		
 		service.update(cliente);

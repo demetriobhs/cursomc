@@ -59,7 +59,6 @@ public class ClienteService {
 	// TODO [REFACTOR] Garantir que esse metodo seja chamado apenas quando for para fazer update
 	// parcial do dado. Caso seja para fazer update total, criar um novo metodo que atualize
 	// o dado por completo.
-	// TODO [REFACTOR] garantir que a categoria tenha um ID. Fazer isso em uma validacao.
 	public Cliente update(Cliente cliente) {
 		Cliente persistedCliente = getById(cliente.getId());
 		
