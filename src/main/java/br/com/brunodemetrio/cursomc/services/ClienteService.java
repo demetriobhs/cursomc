@@ -21,6 +21,12 @@ public class ClienteService {
 	@Autowired
 	private ClienteRepository repository;
 	
+	// TODO [REFACTOR] verificar a melhor maneira de disponibilizar
+	// classes de service para que as classes nao fiquem super 
+	// populadas de atributos services
+	@Autowired
+	private EnderecoService enderecoService;
+	
 	public List<Cliente> getAll() {
 		return repository.findAll();
 	}
@@ -37,6 +43,14 @@ public class ClienteService {
 		PageRequest pageRequest = PageRequest.of(page, itemsPerPage, Direction.fromString(direction), orderBy);
 		
 		return repository.findAll(pageRequest);
+	}
+	
+	public Cliente create(Cliente cliente) {
+		cliente = repository.save(cliente);
+		
+		enderecoService.create(cliente.getEnderecos());
+		
+		return cliente;
 	}
 	
 	// TODO [REFACTOR] Garantir que esse metodo seja chamado apenas quando for para fazer update

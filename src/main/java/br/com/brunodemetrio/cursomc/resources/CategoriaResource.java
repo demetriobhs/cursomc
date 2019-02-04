@@ -23,13 +23,20 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import br.com.brunodemetrio.cursomc.domain.Categoria;
 import br.com.brunodemetrio.cursomc.resources.dtos.CategoriaDTO;
 import br.com.brunodemetrio.cursomc.services.CategoriaService;
+import br.com.brunodemetrio.cursomc.services.dtos.CategoriaDTOService;
 
 @RestController
 @RequestMapping("/categorias")
 public class CategoriaResource {
 	
+	// TODO [REFACTOR] verificar a melhor maneira de disponibilizar
+	// classes de service para o uso em resources para que as classes
+	// de resource nao fiquem super populadas de atributos services
 	@Autowired
 	private CategoriaService service;
+	
+	@Autowired
+	private CategoriaDTOService dtoService;
 	
 	@GetMapping
 	public ResponseEntity<List<?>> findAll() {
@@ -62,7 +69,8 @@ public class CategoriaResource {
 	
 	@PostMapping
 	public ResponseEntity<Void> create(@Valid @RequestBody CategoriaDTO categoriaDTO) {
-		Categoria categoria = service.create(categoriaDTO.parse());
+		Categoria categoria = dtoService.parse(categoriaDTO);
+		categoria = service.create(categoria);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
 				.path("/{id}")
@@ -74,7 +82,9 @@ public class CategoriaResource {
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> update(@Valid @RequestBody CategoriaDTO categoriaDTO, @PathVariable Integer id) {
-		service.update(categoriaDTO.parse());
+		Categoria categoria = dtoService.parse(categoriaDTO);
+		
+		service.update(categoria);
 		
 		return ResponseEntity.noContent().build();
 	}

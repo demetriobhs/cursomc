@@ -42,8 +42,4 @@ public class CategoriaDTO implements Serializable {
 		this.nome = nome;
 	}
 	
-	public Categoria parse() {
-		return new Categoria(id, nome);
-	}
-	
 }

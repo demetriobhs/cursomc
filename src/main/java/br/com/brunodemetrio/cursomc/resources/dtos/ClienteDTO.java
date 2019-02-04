@@ -56,8 +56,4 @@ public class ClienteDTO implements Serializable {
 		this.email = email;
 	}
 	
-	public Cliente parse() {
-		return new Cliente(id, nome, email, null, null);
-	}
-	
 }
