@@ -25,6 +25,10 @@ public class CategoriaService {
 		return repository.findAll();
 	}
 	
+	public List<Categoria> getAllById(List<Integer> ids) {
+		return repository.findAllById(ids);
+	}
+	
 	public Categoria getById(Integer id) {
 		ensureCategoriaExists(id);
 		
